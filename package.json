@@ -1,0 +1,17 @@
+{
+  "name": "demons-crest-phaser",
+  "version": "1.0.0",
+  "description": "A project based on Demons Crest for Phaser 3",
+  "main": "index.js",
+  "repository": "https://www.github.com/vitormakino/demons-crest-phaser",
+  "author": "Vitor Makino",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "6",
+    "babel-loader": "^7.1.5",
+    "webpack": "^4.16.5"
+  },
+  "dependencies": {
+    "phaser": "^3.11.0"
+  }
+}
