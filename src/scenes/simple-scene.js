@@ -1,54 +1,75 @@
+import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.min.js';
+import Player from "../sprites/player";
+
 export class SimpleScene extends Phaser.Scene {
 
   preload() {
-    this.load.atlas('demons_crest', 'assets/demons_crest_spritesheet.png', 'assets/demons_crest_sprites.json');
+    this.load.tilemapTiledJSON("map", "assets/demons_crest_map.json");
+    this.load.image("background", "assets/fundo.png");
+    this.load.atlas('demons_crest', 'assets/demons_crest_sprites.png', 'assets/demons_crest_sprites.json');
+    
+    this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
+    //this.load.plugin('AnimatedTiles', AnimatedTiles);
   }
 
   create() {
-    this.add.text(100, 100, 'It\'s Demons Crest!', { fill: '#0f0' });
+    //this.sys.install('AnimatedTiles');
 
-    this.player = this.physics.add.sprite(100, 300, 'demons_crest');
+    const map = this.make.tilemap({ key: 'map'});
+  
+    // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
+    // Phaser's cache (i.e. the name you used in preload)
+    this.tileset = map.addTilesetImage("fundo", "background");
 
-    // Create the player's walking animations from the texture atlas. These are stored in the global
-    // animation manager so any sprite can access them.
-    const anims = this.anims;
-    anims.create({
-      key: "idle",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "idle", start: 1, end: 4 }),
-      frameRate: 4,
-      repeat: -1
+    // Parameters: layer name (or index) from Tiled, tileset, x, y
+    const groundLayer = map.createDynamicLayer("chao", this.tileset, 0, 0);
+    const paredeLayer = map.createDynamicLayer("parede", this.tileset, 0, 0);
+    const fundoLayer = map.createDynamicLayer("fundo", this.tileset, 0, 0);    
+
+    //To initilize the plugin you just need to pass the tilemap you want to animate to the plugin.
+    //The plugin requires a dynamic layers to work.
+    this.sys.animatedTiles.init(map);
+
+    groundLayer.setCollisionByProperty({ collides: true });
+    paredeLayer.setCollisionByProperty({ collides: true });
+
+    /*
+    const debugGraphics = this.add.graphics().setAlpha(0.75);
+    groundLayer.renderDebug(debugGraphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
     });
-    anims.create({
-      key: "walk",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "walk", start: 1, end: 6 }),
-      frameRate: 4,
-      repeat: -1
+  
+    
+    paredeLayer.renderDebug(debugGraphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
     });
+*/
 
-    //cria cursor
+
+    const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point");
+    this.player = new Player(this, spawnPoint.x, spawnPoint.y);
+
+    // This will watch the player and worldLayer every frame to check for collisions
+    this.physics.add.collider(this.player.sprite, groundLayer);
+    this.physics.add.collider(this.player.sprite, paredeLayer);
+
+    // Turn on physics debugging to show player's hitbox
+    //this.physics.world.createDebugGraphic();
+
+     //cria cursor
     this.cursors = this.input.keyboard.createCursorKeys();
     
-    this.player.anims.play("idle", true);
+    const cam = this.cameras.main;
+    cam.startFollow(this.player.sprite);
+    cam.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    cam.fadeFrom(500, 0, 0, 0);
   }
 
   update(time, delta) {
-    const speed = 90;
-    const prevVelocity = this.player.body.velocity.clone();
-
-    // Stop any previous movement from the last frame
-    this.player.body.setVelocity(0);
-
-    // Horizontal movement
-    if (this.cursors.left.isDown) {
-      this.player.anims.play("walk", true);
-      this.player.flipX = true;
-      this.player.body.setVelocityX(-speed);
-    } else if (this.cursors.right.isDown) {
-      this.player.anims.play("walk", true);
-      this.player.flipX = false;
-      this.player.body.setVelocityX(speed);
-    } else {
-      this.player.anims.play("idle", true);
-    }
+    this.player.update(time,delta);
   }
 }

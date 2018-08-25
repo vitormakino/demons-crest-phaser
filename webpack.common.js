@@ -5,8 +5,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-  mode: 'development',
-
   entry: {
     app: './src/index.js'
   },
@@ -34,11 +32,9 @@ module.exports = {
           }
         }
       }
+      ,
+      { test: /phaser-split\.js$/, use: ['expose-loader?Phaser'] }
     ]
-  },
-
-  devServer: {
-    contentBase: path.resolve(__dirname, 'build'),
   },
 
   plugins: [
