@@ -1,4 +1,4 @@
-import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.min.js';
+import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 import Player from "../sprites/player";
 
 export class SimpleScene extends Phaser.Scene {
@@ -22,8 +22,8 @@ export class SimpleScene extends Phaser.Scene {
     this.tileset = map.addTilesetImage("fundo", "background");
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
-    const groundLayer = map.createDynamicLayer("chao", this.tileset, 0, 0);
-    const paredeLayer = map.createDynamicLayer("parede", this.tileset, 0, 0);
+    const groundLayer = map.createStaticLayer("chao", this.tileset, 0, 0);
+    const paredeLayer = map.createStaticLayer("parede", this.tileset, 0, 0);
     const fundoLayer = map.createDynamicLayer("fundo", this.tileset, 0, 0);    
 
     //To initilize the plugin you just need to pass the tilemap you want to animate to the plugin.
