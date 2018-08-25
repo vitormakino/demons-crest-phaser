@@ -46,7 +46,7 @@ module.exports = {
       }
     ]),
     new HtmlWebpackPlugin({
-       title: 'Demons Crest Phaser'
+       template: './src/index.html'
     }),
     new webpack.DefinePlugin({
       'typeof CANVAS_RENDERER': JSON.stringify(true),

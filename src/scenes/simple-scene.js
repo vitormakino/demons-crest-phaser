@@ -33,22 +33,22 @@ export class SimpleScene extends Phaser.Scene {
     groundLayer.setCollisionByProperty({ collides: true });
     paredeLayer.setCollisionByProperty({ collides: true });
 
-    /*
-    const debugGraphics = this.add.graphics().setAlpha(0.75);
-    groundLayer.renderDebug(debugGraphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-    });
-  
+    // Turn on physics debugging to show player's hitbox
+    window.enableDebugsPlayerHitbox = () => this.physics.world.createDebugGraphic();
+    window.enableDebugsCollides = () => {
+      const debugGraphics = this.add.graphics().setAlpha(0.75);
+      groundLayer.renderDebug(debugGraphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      });
     
-    paredeLayer.renderDebug(debugGraphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-    });
-*/
-
+      paredeLayer.renderDebug(debugGraphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      });
+    };
 
     const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point");
     this.player = new Player(this, spawnPoint.x, spawnPoint.y);
@@ -57,8 +57,7 @@ export class SimpleScene extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, groundLayer);
     this.physics.add.collider(this.player.sprite, paredeLayer);
 
-    // Turn on physics debugging to show player's hitbox
-    //this.physics.world.createDebugGraphic();
+
 
      //cria cursor
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -66,7 +65,7 @@ export class SimpleScene extends Phaser.Scene {
     const cam = this.cameras.main;
     cam.startFollow(this.player.sprite);
     cam.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    cam.fadeFrom(500, 0, 0, 0);
+    cam.fadeFrom(1000, 0, 0, 0);
   }
 
   update(time, delta) {

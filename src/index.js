@@ -3,6 +3,7 @@ import 'phaser';
 import { SimpleScene } from './scenes/simple-scene';
 
 const gameConfig = {
+  parent: "game-container",
   width: 320,
   height: 200,
   zoom: 3,
