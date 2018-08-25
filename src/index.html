@@ -10,35 +10,57 @@
     <meta http-equiv="cleartype" content="on">
     <meta name="format-detection" content="telephone=no">
     <style>
-        html,
-        body {
+        * {
           margin: 0;
           padding: 0;
-             image-rendering: optimizeSpeed;              /* Older versions of FF */
+        }
+
+        html,
+        body {
+          image-rendering: optimizeSpeed;              /* Older versions of FF */
           image-rendering: -moz-crisp-edges;           /* FF 6.0+ */
           image-rendering: -webkit-optimize-contrast;  /* Webkit (non standard naming) */
           image-rendering: -o-crisp-edges;             /* OS X & Windows Opera (12.02+) */
           image-rendering: crisp-edges;                /* Possible future browsers. */
           -ms-interpolation-mode: nearest-neighbor;    /* IE (non standard naming) */
           image-rendering: pixelated;                  /* Chrome 41 */
+          min-height: 100%;
         }
 
         body {
+            background: linear-gradient(rgba(0, 0, 0, 1), rgba(0,0,0,0.2) ), url(assets/back_page.jpg) fixed;
+            background-size: cover;
+            background-repeat: no-repeat;
             color: white;
             font-family: sans-serif;
             background-color: black;
         }
 
-        .title {
-            margin: auto;
+        .head {
+            margin-top: 20px;
+            margin: 10px 10px;
         }
 
-        .container {
-            display: absolute;
-        } 
+        .title {
+            float:left;
+        }
 
         .menu-lateral {
             float:right;
+            background-color: rgba(0, 0, 0, 0.5); 
+            padding: 30px 30px;
+            
+        }
+
+        .menu-lateral li {
+            display: inline-block;
+            margin-left: 20px;
+
+        }
+        
+        a {
+            color: white;
+            text-decoration: none;
         }
 
         #game-container {
@@ -48,8 +70,8 @@
         }
     
         #game-container {
-            min-width: 100vw;
-            min-height: 100vh;
+            min-width: 80vw;
+            min-height: 80vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -62,12 +84,15 @@
 </head>
 
 <body>
-    <h1 class="title">Demons Crest with Phaser3</h1>
-    <div class="container">
-        <div class="menu-lateral">
-            <a href='javascript:enableDebugsPlayerHitbox()'>Enable Player Hitbox debug</a>
-            <a href='javascript:enableDebugsCollides()'>Enable Collides debug</a>
-        </div>
-        <div id="game-container"></div>
+    
+    <div class="head">
+        <h1 class="title">Demons Crest with Phaser3</h1>
+        <ul class="menu-lateral">
+            <li><a href='javascript:enableDebugsPlayerHitbox()'>Enable Player Hitbox debug</a></li>    
+            <li><a href='javascript:enableDebugsCollides()'>Enable Collides debug</a></li>
+            <li><a href='javascript:enableDebugsCamDeadZone()'>Enable Cam Deadzone debug</a></li>
+        </ul>
     </div>
+    
+    <div id="game-container"></div>
 </body>

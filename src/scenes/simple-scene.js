@@ -9,12 +9,9 @@ export class SimpleScene extends Phaser.Scene {
     this.load.atlas('demons_crest', 'assets/demons_crest_sprites.png', 'assets/demons_crest_sprites.json');
     
     this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-    //this.load.plugin('AnimatedTiles', AnimatedTiles);
   }
 
   create() {
-    //this.sys.install('AnimatedTiles');
-
     const map = this.make.tilemap({ key: 'map'});
   
     // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
@@ -22,11 +19,15 @@ export class SimpleScene extends Phaser.Scene {
     this.tileset = map.addTilesetImage("fundo", "background");
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
-    const groundLayer = map.createStaticLayer("chao", this.tileset, 0, 0);
-    const paredeLayer = map.createStaticLayer("parede", this.tileset, 0, 0);
+    const groundLayer = map.createDynamicLayer("chao", this.tileset, 0, 0);
+    const paredeLayer = map.createDynamicLayer("parede", this.tileset, 0, 0);
     const fundoLayer = map.createDynamicLayer("fundo", this.tileset, 0, 0);    
-
-    //To initilize the plugin you just need to pass the tilemap you want to animate to the plugin.
+    const fundoSpriteLayer = map.createDynamicLayer("Sprites", this.tileset, 0, 0);  
+    
+    this.camadas = {
+      groundLayer, paredeLayer, fundoLayer, fundoSpriteLayer
+    };
+     //To initilize the plugin you just need to pass the tilemap you want to animate to the plugin.
     //The plugin requires a dynamic layers to work.
     this.sys.animatedTiles.init(map);
 
@@ -57,17 +58,62 @@ export class SimpleScene extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, groundLayer);
     this.physics.add.collider(this.player.sprite, paredeLayer);
 
-
-
      //cria cursor
     this.cursors = this.input.keyboard.createCursorKeys();
     
     const cam = this.cameras.main;
-    cam.startFollow(this.player.sprite);
+    cam.startFollow(this.player.sprite, true);
     cam.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    cam.fadeFrom(1000, 0, 0, 0);
+    cam.setDeadzone(60, 20);
+
+    window.enableDebugsCamDeadZone = () => {
+      if (cam.deadzone) {
+          var graphics = this.add.graphics().setScrollFactor(0);
+          graphics.lineStyle(2, 0x00ff00, 1);
+          graphics.strokeRect(spawnPoint.x - cam.deadzone.width, spawnPoint.y - cam.deadzone.height, cam.deadzone.width, cam.deadzone.height);
+      }
+    };
+
+
+    //
+    this.inicializarCena();
   }
 
+  /**
+   * Inicializa a Cena
+   */
+  inicializarCena() {
+    const  {
+      groundLayer, paredeLayer, fundoLayer, fundoSpriteLayer
+    } = this.camadas;
+
+    //Remove a visibilidade das camadas
+    //para que sejam mostradas por interpolação
+    //através dos teweens
+    groundLayer.setAlpha(0);
+    paredeLayer.setAlpha(0);
+    fundoLayer.setAlpha(0);
+    fundoSpriteLayer.setAlpha(0);
+    this.player.sprite.setAlpha(0);
+
+    this.tweens.add({
+      targets: [this.player.sprite, fundoSpriteLayer],
+      alpha: 1,
+      duration: 1000,
+      ease: 'Linear',
+      delay: 1000
+    });
+    this.tweens.add({
+      targets: [groundLayer,fundoLayer, paredeLayer],
+      alpha: 1,
+      duration: 3000,
+      ease: 'Quint.easeIn',
+      delay: 2000
+    });
+
+    this.player.sprite.setFlipX(true);
+  }
+  
   update(time, delta) {
     this.player.update(time,delta);
   }
