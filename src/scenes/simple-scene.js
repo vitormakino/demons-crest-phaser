@@ -1,5 +1,9 @@
 import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 import Player from "../sprites/player";
+import { configControlDisableMusic,
+         configControlEnableDebugsPlayerHitbox,
+         configControlEnableDebugsCollides,
+         configControlEnableDebugsCamDeadZone } from '../utils/debug';
 
 export class SimpleScene extends Phaser.Scene {
 
@@ -8,10 +12,22 @@ export class SimpleScene extends Phaser.Scene {
     this.load.image("background", "assets/fundo.png");
     this.load.atlas('demons_crest', 'assets/demons_crest_sprites.png', 'assets/demons_crest_sprites.json');
     
+    this.load.audio('Prelude_to_Horror', [
+      'assets/music/Prelude_to_Horror.ogg',
+    ]);
     this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
   }
 
   create() {
+     // Add and play the music
+    this.music = this.sound.add('Prelude_to_Horror');
+    this.music.play({
+      loop: true
+    });
+
+    //Configura controle de debug de música
+    configControlDisableMusic(this.music);
+
     const map = this.make.tilemap({ key: 'map'});
   
     // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
@@ -27,6 +43,7 @@ export class SimpleScene extends Phaser.Scene {
     this.camadas = {
       groundLayer, paredeLayer, fundoLayer, fundoSpriteLayer
     };
+
      //To initilize the plugin you just need to pass the tilemap you want to animate to the plugin.
     //The plugin requires a dynamic layers to work.
     this.sys.animatedTiles.init(map);
@@ -34,22 +51,9 @@ export class SimpleScene extends Phaser.Scene {
     groundLayer.setCollisionByProperty({ collides: true });
     paredeLayer.setCollisionByProperty({ collides: true });
 
-    // Turn on physics debugging to show player's hitbox
-    window.enableDebugsPlayerHitbox = () => this.physics.world.createDebugGraphic();
-    window.enableDebugsCollides = () => {
-      const debugGraphics = this.add.graphics().setAlpha(0.75);
-      groundLayer.renderDebug(debugGraphics, {
-        tileColor: null, // Color of non-colliding tiles
-        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-      });
-    
-      paredeLayer.renderDebug(debugGraphics, {
-        tileColor: null, // Color of non-colliding tiles
-        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-      });
-    };
+    //Habilita debug d ehit box do player
+    configControlEnableDebugsPlayerHitbox(this);
+    configControlEnableDebugsCollides(this,[groundLayer, paredeLayer]);
 
     const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point");
     this.player = new Player(this, spawnPoint.x, spawnPoint.y);
@@ -66,16 +70,8 @@ export class SimpleScene extends Phaser.Scene {
     cam.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     cam.setDeadzone(60, 20);
 
-    window.enableDebugsCamDeadZone = () => {
-      if (cam.deadzone) {
-          var graphics = this.add.graphics().setScrollFactor(0);
-          graphics.lineStyle(2, 0x00ff00, 1);
-          graphics.strokeRect(spawnPoint.x - cam.deadzone.width, spawnPoint.y - cam.deadzone.height, cam.deadzone.width, cam.deadzone.height);
-      }
-    };
+    configControlEnableDebugsCamDeadZone(this, cam,spawnPoint.x, spawnPoint.y)
 
-
-    //
     this.inicializarCena();
   }
 

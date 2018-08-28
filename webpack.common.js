@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const package = require("./package.json");
 
 module.exports = {
   entry: {
@@ -46,7 +47,8 @@ module.exports = {
       }
     ]),
     new HtmlWebpackPlugin({
-       template: './src/index.html'
+       template: './src/index.html',
+       repository: package.repository
     }),
     new webpack.DefinePlugin({
       'typeof CANVAS_RENDERER': JSON.stringify(true),
