@@ -1,24 +1,27 @@
 import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
+
 import Player from "../sprites/player";
 import { configControlDisableMusic,
          configControlEnableDebugsPlayerHitbox,
          configControlEnableDebugsCollides,
          configControlEnableDebugsCamDeadZone } from '../utils/debug';
+import Fireball from '../sprites/fireball';
+import { makeAnimations } from '../helpers/animations';
 
 export class SimpleScene extends Phaser.Scene {
-
-  preload() {
-    this.load.tilemapTiledJSON("map", "assets/demons_crest_map.json");
-    this.load.image("background", "assets/fundo.png");
-    this.load.atlas('demons_crest', 'assets/demons_crest_sprites.png', 'assets/demons_crest_sprites.json');
-    
-    this.load.audio('Prelude_to_Horror', [
-      'assets/music/Prelude_to_Horror.ogg',
-    ]);
-    this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
+  constructor(test) {
+    super({
+        key: 'SimpleScene'
+    });
   }
 
+  preload() {
+    this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
+  }
   create() {
+    // prepare all animations, defined in a separate file
+    makeAnimations(this);
+
      // Add and play the music
     this.music = this.sound.add('Prelude_to_Horror');
     this.music.play({
@@ -72,6 +75,7 @@ export class SimpleScene extends Phaser.Scene {
 
     configControlEnableDebugsCamDeadZone(this, cam,spawnPoint.x, spawnPoint.y)
 
+    this.inicializarFireballs();
     this.inicializarCena();
   }
 
@@ -109,8 +113,21 @@ export class SimpleScene extends Phaser.Scene {
 
     this.player.sprite.setFlipX(true);
   }
+
+  inicializarFireballs() {
+    this.fireballs = this.add.group({
+      classType: Fireball,
+      maxSize: 10,
+      runChildUpdate: false // Due to https://github.com/photonstorm/phaser/issues/3724
+  });
+  }
   
   update(time, delta) {
+    Array.from(this.fireballs.children.entries).forEach(
+      (fireball) => 
+      {fireball.update(time, delta);
+    });
     this.player.update(time,delta);
+
   }
 }

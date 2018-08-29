@@ -1,6 +1,7 @@
 import 'phaser';
 
 import { SimpleScene } from './scenes/simple-scene';
+import { BootScene } from './scenes/boot-scene';
 
 const gameConfig = {
   parent: "game-container",
@@ -14,7 +15,7 @@ const gameConfig = {
       gravity: { y: 1000 }
     }
   },
-  scene: SimpleScene
+  scene: [BootScene, SimpleScene]
 };
 
 new Phaser.Game(gameConfig);

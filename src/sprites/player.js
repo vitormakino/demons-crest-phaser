@@ -1,57 +1,15 @@
 import Phaser from "phaser";
 
-const FLYING_TIMER_DEFAULT = 200;
-const FIRE_COOLDOWN_DEFAULT = 500;
+import {
+  FIRE_COOLDOWN_DEFAULT,
+  FLYING_TIMER_DEFAULT,
+  PLAYER_ACCELERATION_AIR,
+  PLAYER_ACCELERATION_GROUND
+} from '../utils/constants';
 
 export default class Player {
   constructor(scene, x, y) {
-    this.scene = scene;
-
-    // Create the player's walking animations from the texture atlas. These are stored in the global
-    // animation manager so any sprite can access them.
-    const anims = scene.anims;
-    anims.create({
-      key: "idle",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "idle", start: 1, end: 4 }),
-      frameRate: 4,
-      repeat: -1
-    });
-    anims.create({
-      key: "walk",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "walk", start: 1, end: 6 }),
-      frameRate: 4,
-      repeat: -1
-    });
-    anims.create({
-      key: "jump",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "jump", start: 1, end: 4 }),
-      frameRate: 4,
-      repeat: -1
-    });
-    anims.create({
-      key: "attack",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "attack", start: 1, end: 2 }),
-      frameRate: 2,
-      repeat: -1
-    });
-    anims.create({
-      key: "fly",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "fly", start: 1, end: 7 }),
-      frameRate: 12,
-      repeat: -1
-    });
-    anims.create({
-      key: "hover",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "hover", start: 1, end: 4 }),
-      frameRate: 6,
-      repeat: -1
-    });
-    anims.create({
-      key: "death",
-      frames: anims.generateFrameNames("demons_crest", { prefix: "death", start: 1, end: 4 }),
-      frameRate: 4,
-      repeat: 0
-    });
+    this.scene = scene; 
 
     // Create the physics-based sprite that we will move around and animate
     this.sprite = scene.physics.add
@@ -89,7 +47,7 @@ export default class Player {
 
     const { keys, sprite } = this;
     const onGround = sprite.body.blocked.down;
-    const acceleration = onGround ? 400 : 200;
+    const acceleration = onGround ? PLAYER_ACCELERATION_GROUND : PLAYER_ACCELERATION_AIR;
 
     // Apply horizontal acceleration when left/a or right/d are applied
     if (keys.left.isDown || keys.a.isDown) {
@@ -105,14 +63,22 @@ export default class Player {
     }
 
    this.fireCoolDown -= delta;
-   if(this.fireCoolDown <= 0) {
+   if(keys.fire.isDown && this.fireCoolDown < 0) {
     this.fireCoolDown  = FIRE_COOLDOWN_DEFAULT;
-    this.attacking = keys.fire.isDown;
+    this.attacking = true;
+
+    let fireball = this.scene.fireballs.get(this);
+    if (fireball) {
+        fireball.fire(sprite.x, sprite.y, sprite.flipX);
+        this.fireCoolDown = FIRE_COOLDOWN_DEFAULT;
+    }
+   } else {
+    this.attacking = false;
    }
 
    this.flyingTimer -= delta;
 
-    if ((keys.up.isDown || keys.w.isDown) && this.flyingTimer <= 0 ) {
+    if ((keys.up.isDown || keys.w.isDown) && this.flyingTimer < 0 ) {
       console.log(sprite.body.velocity.y);
       this.flyingTimer  = FLYING_TIMER_DEFAULT;
 
@@ -154,12 +120,10 @@ export default class Player {
 
         //Flying Attack!
         if (this.attacking) {
-          sprite.anims.play("attack", true);
+          sprite.anims.play("attack", false);
         }
       }
-    }
-
-    
+    }  
 
     if (keys.x.isDown) {
       this.dead = true;

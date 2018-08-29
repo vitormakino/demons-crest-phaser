@@ -1,0 +1,5 @@
+export const FLYING_TIMER_DEFAULT = 200;
+export const FIRE_COOLDOWN_DEFAULT = 500;
+export const FIRE_VELOCITY = 200;
+export const PLAYER_ACCELERATION_GROUND = 400;
+export const PLAYER_ACCELERATION_AIR = 200;
