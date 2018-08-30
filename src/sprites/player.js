@@ -36,6 +36,15 @@ export default class Player {
     this.dead = false;
     this.fireCoolDown = 0;
     this.flyingTimer = 0;
+
+    this.sprite.on('animationcomplete', this.animationcomplete, this);
+  
+  }
+
+  animationcomplete(animation, frame) {
+    if(animation.key === 'attack' || animation.key === 'fly-attack') {
+      this.attacking = false;
+    }
   }
 
   freeze() {
@@ -49,6 +58,24 @@ export default class Player {
     const onGround = sprite.body.blocked.down;
     const acceleration = onGround ? PLAYER_ACCELERATION_GROUND : PLAYER_ACCELERATION_AIR;
 
+
+
+   this.fireCoolDown -= delta;
+   if(keys.fire.isDown && this.fireCoolDown < 0) {
+    let fireball = this.scene.fireballs.get(this);
+    if (fireball) {
+        var mouthY = sprite.y - 5;
+        var mouthX = sprite.x + 10 * (sprite.flipX ? -1 : 1);
+
+        fireball.fire(mouthX, mouthY, sprite.flipX);
+        this.fireCoolDown = FIRE_COOLDOWN_DEFAULT;
+        this.attacking = true;
+    }
+   }
+
+   if(this.attacking) {
+    sprite.setAccelerationX(0);
+   } else {
     // Apply horizontal acceleration when left/a or right/d are applied
     if (keys.left.isDown || keys.a.isDown) {
       sprite.setAccelerationX(-acceleration);
@@ -61,19 +88,6 @@ export default class Player {
     } else {
       sprite.setAccelerationX(0);
     }
-
-   this.fireCoolDown -= delta;
-   if(keys.fire.isDown && this.fireCoolDown < 0) {
-    this.fireCoolDown  = FIRE_COOLDOWN_DEFAULT;
-    this.attacking = true;
-
-    let fireball = this.scene.fireballs.get(this);
-    if (fireball) {
-        fireball.fire(sprite.x, sprite.y, sprite.flipX);
-        this.fireCoolDown = FIRE_COOLDOWN_DEFAULT;
-    }
-   } else {
-    this.attacking = false;
    }
 
    this.flyingTimer -= delta;
@@ -98,29 +112,25 @@ export default class Player {
 
     // Update the animation/texture based on the state of the player
     if (onGround) {
-      if (sprite.body.velocity.x !== 0) {
-        sprite.anims.play("walk", true);
-      } else { 
-        sprite.anims.play("idle", true);
-      }
-     
       //Attack!
       if (this.attacking) {
         sprite.anims.play("attack", true);
+      } else if (sprite.body.velocity.x !== 0) {
+        sprite.anims.play("walk", true);
+      } else { 
+        sprite.anims.play("idle", true);
       }
     } else {
       if (sprite.body.velocity.y !== 0) {
         sprite.anims.play("jump", true);
       } else if(this.flying) {
-        if (sprite.body.velocity.x !== 0) {
+        //Flying Attack!
+        if (this.attacking) {
+          sprite.anims.play("fly-attack", true);
+        } else if (sprite.body.velocity.x !== 0) {
           sprite.anims.play("fly", true);
         } else { 
           sprite.anims.play("hover", true);
-        }
-
-        //Flying Attack!
-        if (this.attacking) {
-          sprite.anims.play("attack", false);
         }
       }
     }  

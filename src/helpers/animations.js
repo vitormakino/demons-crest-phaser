@@ -28,8 +28,14 @@ const playerAnimations = (scene) => {
     anims.create({
       key: "attack",
       frames: anims.generateFrameNames("demons_crest", { prefix: "attack", start: 1, end: 2 }),
-      frameRate: 1,
-      repeat: -1
+      frameRate: 6,
+      repeat: 0
+    });
+    anims.create({
+      key: "fly-attack",
+      frames: anims.generateFrameNames("demons_crest", { prefix: "fly-attack", start: 1, end: 3 }),
+      frameRate: 12,
+      repeat: 0
     });
     anims.create({
       key: "fly",
