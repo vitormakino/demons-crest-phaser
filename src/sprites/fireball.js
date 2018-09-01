@@ -16,12 +16,10 @@ export default class Fireball extends Phaser.GameObjects.Sprite {
         this.body.offset.set(12, 12);
 
         this.on('animationcomplete', (animation, frame) => {
-            console.log(animation);
-
           if (this.anims.currentAnim.key === 'explode') {
             this.setActive(false);
             this.setVisible(false);
-        }
+          }
         }, this);
     }
 
