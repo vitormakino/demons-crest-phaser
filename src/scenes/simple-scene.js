@@ -124,9 +124,8 @@ export class SimpleScene extends Phaser.Scene {
   
   update(time, delta) {
     Array.from(this.fireballs.children.entries).forEach(
-      (fireball) => 
-      {fireball.update(time, delta);
-    });
+      (fireball) => {fireball.update(time, delta);}
+    );
     this.player.update(time,delta);
 
   }

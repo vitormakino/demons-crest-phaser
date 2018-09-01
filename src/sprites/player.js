@@ -16,8 +16,11 @@ export default class Player {
       .sprite(x, y, 'demons_crest')
       .setDrag(1000, 0)
       .setMaxVelocity(100, 300)
-      .setSize(27, 45);
-   
+      .setSize(27, 40)
+      .setOffset(-13, -35)
+      .setOrigin(0.5,1)
+     ;
+
     // Track the arrow keys & WASD
     const { LEFT, RIGHT, UP, W, A, D, Z, X } = Phaser.Input.Keyboard.KeyCodes;
     this.keys = scene.input.keyboard.addKeys({
@@ -38,7 +41,6 @@ export default class Player {
     this.flyingTimer = 0;
 
     this.sprite.on('animationcomplete', this.animationcomplete, this);
-  
   }
 
   animationcomplete(animation, frame) {
@@ -64,12 +66,17 @@ export default class Player {
    if(keys.fire.isDown && this.fireCoolDown < 0) {
     let fireball = this.scene.fireballs.get(this);
     if (fireball) {
-        var mouthY = sprite.y - 5;
-        var mouthX = sprite.x + 10 * (sprite.flipX ? -1 : 1);
-
-        fireball.fire(mouthX, mouthY, sprite.flipX);
-        this.fireCoolDown = FIRE_COOLDOWN_DEFAULT;
-        this.attacking = true;
+      if(this.flying) {
+        var mouthY = sprite.y - 23;
+        var mouthX = sprite.x + 20 * (sprite.flipX ? -1 : 1);
+      } else {
+        var mouthY = sprite.y - 28;
+        var mouthX = sprite.x + 18 * (sprite.flipX ? -1 : 1);
+      }
+          
+      fireball.fire(mouthX, mouthY, sprite.flipX);
+      this.fireCoolDown = FIRE_COOLDOWN_DEFAULT;
+      this.attacking = true;
     }
    }
 
@@ -122,7 +129,11 @@ export default class Player {
       }
     } else {
       if (sprite.body.velocity.y !== 0) {
-        sprite.anims.play("jump", true);
+        if (this.attacking) {
+          sprite.anims.play("fly-attack", true);
+        } else {
+          sprite.anims.play("jump", true);
+        }        
       } else if(this.flying) {
         //Flying Attack!
         if (this.attacking) {

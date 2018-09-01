@@ -63,6 +63,12 @@ const fireballAnimations = (scene) => {
       key: "fire",
       frames: anims.generateFrameNames("demons_crest", { prefix: "fire", start: 1, end: 4 }),
       frameRate: 3,
-      repeat: 1
+      repeat: -1
+    });
+    anims.create({
+      key: "explode",
+      frames: anims.generateFrameNames("demons_crest", { prefix: "explode", start: 1, end: 4 }),
+      frameRate: 12,
+      repeat: 0
     });
 };
