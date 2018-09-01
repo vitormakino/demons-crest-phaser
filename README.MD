@@ -3,6 +3,8 @@
 
 This repository is a sandbox inspired in one of my favorite childhood games Demon's Crest for testing out Phaser 3. It's based on the Bootstrap project https://github.com/nkholski/phaser3-es6-webpack.
 
+![Running example](https://github.com/vitormakino/demons-crest-phaser/raw/master/demo-opt.gif)
+
 **Disclaimer**: This project is intended for non-commercial educational purposes. It's not an attempt to recreate any copyrighted game, and it will not become a playable game. 
 
 # References:
