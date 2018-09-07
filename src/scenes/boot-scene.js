@@ -1,3 +1,5 @@
+import { makeAnimations } from '../helpers/animations';
+
 export class BootScene extends Phaser.Scene {
     constructor(test) {
         super({
@@ -73,12 +75,16 @@ export class BootScene extends Phaser.Scene {
 
         this.load.on('complete', () => {
             //console.log('complete');
+            
             progressBar.destroy();
             progressBox.destroy();
             loadingText.destroy();
             percentText.destroy(); 
             assetText.destroy(); 
             
+            // prepare all animations, defined in a separate file
+            makeAnimations(this);
+
             this.scene.start('SimpleScene');
         });
     }

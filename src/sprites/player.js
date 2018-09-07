@@ -17,12 +17,34 @@ export default class Player {
       .setDrag(1000, 0)
       .setMaxVelocity(100, 300)
       .setSize(27, 40)
-      .setOffset(-13, -35)
+      .setOffset(24, -27)
       .setOrigin(0.5,1)
      ;
 
+     // An emitter for fireball.
+     this.fireEmitter = scene.add.particles('demons_crest');
+
+     this.fireEmitter.createEmitter({
+       frame: {
+          frames: ['faisca1','faisca2','faisca3'],
+          cycle: true
+        },
+        gravity: 0,
+        angle: 0,
+        lifespan: 100,
+        speedX: 60,
+        
+        frequency: -1,
+
+        emitCallback: (t) => {
+          t.velocityX *= (this.sprite.flipX ? -1 : 1);
+        }
+     });
+
+
+
     // Track the arrow keys & WASD
-    const { LEFT, RIGHT, UP, W, A, D, Z, X } = Phaser.Input.Keyboard.KeyCodes;
+    const { LEFT, RIGHT, UP, W, A, D, Z, X} = Phaser.Input.Keyboard.KeyCodes;
     this.keys = scene.input.keyboard.addKeys({
       left: LEFT,
       right: RIGHT,
@@ -30,8 +52,7 @@ export default class Player {
       w: W,
       a: A,
       d: D,
-      fire: Z,
-      x: X
+      fire: Z
     });
 
     this.attacking = false;
@@ -49,6 +70,20 @@ export default class Player {
     }
   }
 
+  mouthPosition() {
+    const { sprite } = this;
+
+    if(this.flying) {
+      var mouthY = sprite.y - 23;
+      var mouthX = sprite.x + 20 * (sprite.flipX ? -1 : 1);
+    } else {
+      var mouthY = sprite.y - 28;
+      var mouthX = sprite.x + 18 * (sprite.flipX ? -1 : 1);
+    }
+
+    return { x: mouthX, y: mouthY };
+  }
+
   freeze() {
     this.sprite.body.moves = false;
   }
@@ -60,21 +95,15 @@ export default class Player {
     const onGround = sprite.body.blocked.down;
     const acceleration = onGround ? PLAYER_ACCELERATION_GROUND : PLAYER_ACCELERATION_AIR;
 
-
-
    this.fireCoolDown -= delta;
    if(keys.fire.isDown && this.fireCoolDown < 0) {
     let fireball = this.scene.fireballs.get(this);
     if (fireball) {
-      if(this.flying) {
-        var mouthY = sprite.y - 23;
-        var mouthX = sprite.x + 20 * (sprite.flipX ? -1 : 1);
-      } else {
-        var mouthY = sprite.y - 28;
-        var mouthX = sprite.x + 18 * (sprite.flipX ? -1 : 1);
-      }
-          
-      fireball.fire(mouthX, mouthY, sprite.flipX);
+      var pos = this.mouthPosition();
+      
+      this.fireEmitter.emitParticle(1, pos.x, pos.y);
+
+      fireball.fire(pos.x, pos.y, sprite.flipX);
       this.fireCoolDown = FIRE_COOLDOWN_DEFAULT;
       this.attacking = true;
     }
@@ -145,14 +174,15 @@ export default class Player {
         }
       }
     }  
+  }
 
-    if (keys.x.isDown) {
-      this.dead = true;
-      sprite.anims.play("death", true);
-      sprite.setVelocity(0);
-      sprite.setSize(40, 13);
-      sprite.setOffset(-40, -13);
-    }
+  die() {
+    this.dead = true;
+    this.sprite.anims.play("death", true);
+    this.sprite.body.stop();
+    this.sprite.body.setAllowGravity(true);
+    this.sprite.setSize(40, 13);
+    this.sprite.setOffset(20, -3);
   }
 
   destroy() {

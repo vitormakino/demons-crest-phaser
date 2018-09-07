@@ -4,9 +4,10 @@ import Player from "../sprites/player";
 import { configControlDisableMusic,
          configControlEnableDebugsPlayerHitbox,
          configControlEnableDebugsCollides,
-         configControlEnableDebugsCamDeadZone } from '../utils/debug';
+         configControlRestartScene,
+         configControlEnableDebugsCamDeadZone,
+         configControlKillPlayer } from '../utils/debug';
 import Fireball from '../sprites/fireball';
-import { makeAnimations } from '../helpers/animations';
 
 export class SimpleScene extends Phaser.Scene {
   constructor(test) {
@@ -18,10 +19,8 @@ export class SimpleScene extends Phaser.Scene {
   preload() {
     this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
   }
+  
   create() {
-    // prepare all animations, defined in a separate file
-    makeAnimations(this);
-
      // Add and play the music
     this.music = this.sound.add('Prelude_to_Horror');
     this.music.play({
@@ -56,10 +55,13 @@ export class SimpleScene extends Phaser.Scene {
 
     //Habilita debug d ehit box do player
     configControlEnableDebugsPlayerHitbox(this);
+    configControlRestartScene(this);
     configControlEnableDebugsCollides(this,[groundLayer, paredeLayer]);
 
     const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point");
     this.player = new Player(this, spawnPoint.x, spawnPoint.y);
+    
+    configControlKillPlayer(this.player);
 
     // This will watch the player and worldLayer every frame to check for collisions
     this.physics.add.collider(this.player.sprite, groundLayer);

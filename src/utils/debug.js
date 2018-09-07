@@ -43,3 +43,16 @@ export const configControlEnableDebugsCamDeadZone = (scene, cam, x, y) => {
         }
       };
 };
+
+
+export const configControlRestartScene = (scene) => {
+    window.restartScene = (enable) => {
+        scene.scene.restart();
+      };
+};
+
+export const configControlKillPlayer = (player) => {
+    window.killPlayer = () => {
+        player.die();
+    };
+};
