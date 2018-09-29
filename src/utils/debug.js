@@ -5,7 +5,7 @@ export const configControlDisableMusic = (music) => {
 export const configControlEnableDebugsPlayerHitbox = (scene) => {
     var createdDebugGraphic = false;
     // Turn on physics debugging to show player's hitbox
-    window.enableDebugsPlayerHitbox = (enable) => {
+    window.enableDebugsPlayerHitbox = () => {
         if(createdDebugGraphic) return;
 
         createdDebugGraphic = true;
@@ -15,7 +15,7 @@ export const configControlEnableDebugsPlayerHitbox = (scene) => {
 
 export const configControlEnableDebugsCollides = (scene, layers) => {
     var createdDebugGraphic = false;
-    window.enableDebugsCollides = (enable) => {
+    window.enableDebugsCollides = () => {
         if(createdDebugGraphic) return;
         
         createdDebugGraphic = true;
@@ -32,7 +32,7 @@ export const configControlEnableDebugsCollides = (scene, layers) => {
 
 export const configControlEnableDebugsCamDeadZone = (scene, cam, x, y) => {
     var createdDebugGraphic = false;
-    window.enableDebugsCamDeadZone = (enable) => {
+    window.enableDebugsCamDeadZone = () => {
         if(createdDebugGraphic) return;
         
         createdDebugGraphic = true;
@@ -46,7 +46,7 @@ export const configControlEnableDebugsCamDeadZone = (scene, cam, x, y) => {
 
 
 export const configControlRestartScene = (scene) => {
-    window.restartScene = (enable) => {
+    window.restartScene = () => {
         scene.scene.restart();
       };
 };
