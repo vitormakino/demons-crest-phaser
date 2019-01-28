@@ -5,6 +5,8 @@ This repository is a sandbox inspired in one of my favorite childhood games Demo
 
 ![Running example](https://github.com/vitormakino/demons-crest-phaser/raw/master/demo-opt.gif)
 
+**Live demo**: https://dc-phaser3-vitormakino.netlify.com/
+
 **Disclaimer**: This project is intended for non-commercial educational purposes. It's not an attempt to recreate any copyrighted game, and it will not become a playable game. 
 
 # References:
@@ -67,6 +69,6 @@ Also this will start a watch process, so you can change the source and the proce
 
 Run:
 
-```npm run deploy``` or ```yarn deploy```
+```npm run build``` or ```yarn build```
 
 This will optimize and minimize the compiled bundle.
